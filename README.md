@@ -1,0 +1,2 @@
+# amazeRank
+排名
