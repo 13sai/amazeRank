@@ -7,7 +7,7 @@
         :headers="header"
         :on-success="handleImageSuccess"
         :show-file-list="false">
-        <el-button size="small" type="primary">点击上传excel文件</el-button>
+        <el-button type="primary">点击上传excel文件</el-button>
     </el-upload>
   </div>
 </template>
@@ -35,7 +35,10 @@ export default {
   methods: {
     handleImageSuccess(res) {
       if (res.code == 0) {
-        this.$message.success("上传成功！");
+        this.$message.success(res.msg);
+        setTimeout(() =>{
+            this.$router.push("/grade/index")
+        }, 10000);
       } else {
         this.$message.error("上传失败");
       }

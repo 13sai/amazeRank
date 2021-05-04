@@ -55,6 +55,8 @@ class Grade extends Model
         'three_grade_rank' => '三总排名',
         'six_grade'=> '六总',
         'six_grade_rank'=> '六总排名',
+        'wl_rank' => '方向排名',
+        'select_rank' => '选科排名'
     ];
 
     const SUBJECTS = [

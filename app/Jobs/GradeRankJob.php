@@ -33,6 +33,7 @@ class GradeRankJob implements ShouldQueue
     {
         $this->calculateSum();
         $this->generateRank();
+        $this->amazeRank();
     }
 
 
@@ -72,6 +73,39 @@ class GradeRankJob implements ShouldQueue
             
             Grade::where(['id' => $item['id']])->update([
                 $v.'_rank' => $rank
+            ]);
+        }
+    }
+
+    private function amazeRank() 
+    {
+        foreach(['物', '史'] as $v) {
+            $this->selectRank($v, 'wl_rank');
+        }
+
+        foreach(Grade::SELECT_MAP as $v) {
+            $this->selectRank($v, 'select_rank');
+        }
+    }
+
+    private function selectRank($key, $column)
+    {
+        $v = 'six_grade';
+        $list = Grade::select(['id', $v])
+        ->where('select', 'like', $key."%")
+        ->orderBy($v, 'DESC')->get()->toArray();
+        $tmp = 0;
+        $last = 1;
+        foreach($list as $index=>$item) {
+            if ($tmp != $item[$v]) {
+                $tmp = $item[$v];
+                $last = $rank = $index + 1;
+            } else {
+                $rank = $last;
+            }
+            
+            Grade::where(['id' => $item['id']])->update([
+                $column => $rank
             ]);
         }
     }

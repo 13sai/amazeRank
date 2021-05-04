@@ -12,6 +12,7 @@ Route::group([
     Route::get('grade/rank', 'GradeController@rank');
     Route::get('grade/download', 'GradeController@download');
     Route::get('grade/classDownload', 'GradeController@classDownload');
+    Route::get('grade/avgDownload', 'GradeController@avgDownload');
     Route::delete('grade/clean', 'GradeController@truncate');
 });
 

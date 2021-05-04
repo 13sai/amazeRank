@@ -7,6 +7,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\ClassRankExport;
 use App\Exports\GradeClassRankExport;
 use App\Exports\GradeRankExport;
 use App\Http\Controllers\Controller;
@@ -22,7 +23,14 @@ class GradeController extends Controller
         return $this->success([
             'list' => $model->get(),
             'columns' => Grade::FRONT_MAP,
-            'select_list' => Grade::SELECT_MAP
+            'select_list' => Grade::SELECT_MAP,
+            'class_list' => Grade::groupBy('class')->pluck('class'),
+            'sortArr' => ['select_rank', 'wl_rank', 
+            'six_grade_rank', 'three_grade_rank',
+            'chinese_rank', 'math_rank', 'english_rank',
+            'physics_rank', 'history_rank', 'geography_rank',
+            'politics_rank', 'biology_rank', 'chemistry_rank'
+            ]
         ]);
     }
 
@@ -40,6 +48,9 @@ class GradeController extends Controller
         if (!empty($params['select'])) {
             $model = $model->where('select', $params['select']);
         }
+        if (!empty($params['name'])) {
+            $model = $model->where('name', $params['name']);
+        }
 
         return $model;
     }
@@ -50,8 +61,14 @@ class GradeController extends Controller
         return Excel::download((new GradeRankExport()), 'rank.xlsx');
     }
 
-    public function classDownload()
+    public function classDownload(Request $request)
     {
-        return Excel::download((new GradeClassRankExport()), 'class.xlsx');
+        return Excel::download((new ClassRankExport($request->class)), 'class.xlsx');
     }
+
+    public function avgDownload()
+    {
+        return Excel::download((new GradeClassRankExport()), 'avg.xlsx');
+    }
+
 }

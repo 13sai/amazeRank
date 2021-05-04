@@ -29,7 +29,7 @@ class CommonController extends Controller
         $filename = date('dHis') . uniqid() . '.' . $ext;
         $path = $file->storeAs('excel', $filename);
         $res = Excel::import(new GradeImport(), storage_path('app/excel/'.$filename));
-        return $this->success([]);
+        return $this->success([], '数据上传成功，正在分析中...');
     }
 
     // public function 

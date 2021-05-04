@@ -2,10 +2,9 @@
   <div class="app-container">
     <div class="filter-container">
         <el-input
-          v-model="listQuery.id"
+          v-model="listQuery.name"
           style="width: 100px;"
-          class="filter-item"
-          placeholder="ID"
+          placeholder="姓名"
         />
 
         <el-select v-model="listQuery.select" placeholder="选科">
@@ -25,10 +24,24 @@
         导出排名
         </el-button>
         <el-button
+        type="success"
+        @click="avgDownload"
+        >
+        导出班级平均分
+        </el-button>
+        <el-select v-model="listQuery.class" placeholder="班级">
+            <el-option
+                v-for="item in class_list"
+                :key="item"
+                :label="item"
+                :value="item">
+                </el-option>
+        </el-select>
+        <el-button
         type="primary"
         @click="classDownload"
         >
-        导出班级平均分
+        导出班级排名
         </el-button>
       </div>
 
@@ -45,6 +58,7 @@
             v-for="(item, index) in columns" 
             :key="index" 
             :prop="index"
+            :sortable="sortArr.indexOf(index) > -1"
             :label="item">
         </el-table-column>
       </el-table>
@@ -71,11 +85,15 @@ export default {
         page: 1,
         limit: 20,
         select: "",
+        name: "",
+        class: "",
       },
+      class_list: [],
       select_list: [],
       pagination: "",
       dialogTitle:'添加',
       columns: [],
+      sortArr: [],
     }
   },
   created() {
@@ -86,27 +104,26 @@ export default {
       this.listLoading = true;
       getList(this.listQuery).then(response => {
         var data = response.data;
+        this.sortArr = data.sortArr;
         this.list = data.list;
         this.columns = data.columns;
         this.select_list = data.select_list;
+        this.class_list = data.class_list;
       });
       this.listLoading = false;
     },
-
     clean() {
         this.$confirm('确认删除?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
-          type: 'warning'
         }).then(() => {
             cleanData().then(res => {
-                this.$message.success(res.data.msg);
-                this.getList();
+                var that = this
+                that.getList();
+                this.$message.success(res.msg);
             })
         });
     },
-    
-
     handleFilter() {
       this.listQuery.page = 1;
       this.getList();
@@ -127,7 +144,10 @@ export default {
       this.listQuery.type = "";
     },
     classDownload() {
-      window.open(process.env.VUE_APP_BASE_API+'/grade/classDownload?api_token=' + getToken())
+      window.open(process.env.VUE_APP_BASE_API+'/grade/classDownload?class='+this.listQuery.class+'&api_token=' + getToken())
+    },
+    avgDownload() {
+      window.open(process.env.VUE_APP_BASE_API+'/grade/avgDownload?api_token=' + getToken())
     },
     download() {
       var query = this.listQuery;
