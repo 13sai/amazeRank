@@ -27,6 +27,7 @@ class ClassRankExport implements FromArray, WithHeadings
     {
         $v = 'six_grade_rank';
         $list = Grade::where('class', $this->class)->select(array_keys($this->column))
+            // ->where($v, ">", 0)
             ->orderBy($v, 'asc')
             ->get()
             ->toArray();

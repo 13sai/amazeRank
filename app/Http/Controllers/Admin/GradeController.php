@@ -63,7 +63,7 @@ class GradeController extends Controller
 
     public function classDownload(Request $request)
     {
-        return Excel::download((new ClassRankExport($request->class)), 'class.xlsx');
+        return Excel::download((new ClassRankExport($request->class)), $request->class.'.xlsx');
     }
 
     public function avgDownload()

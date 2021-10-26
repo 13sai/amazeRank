@@ -9,16 +9,38 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 
 class GradeClassRankExport implements FromArray, WithHeadings
 {
+    private $classList;
+
+    private function getClassList()
+    {
+    }
+
     /**
     * @return array
     */
     public function array(): array
     {
-        $arr = ['class'];
+        $row = [];
         foreach (Grade::SUBJECTS as $sub=>$v) {
-            $arr[] = DB::raw('avg('.$sub.')');
+            $arr = ['class', DB::raw('avg('.$sub.') as '.$sub)];
+            $list  = Grade::select($arr)->where($sub, '>', 0)->groupBy('class')->get()->toArray();
+            
+            $list = array_column($list, $sub, 'class');
+            if (!$this->classList) {
+                $this->classList = array_keys($list);
+            }
+
+            foreach ($this->classList as $item) {
+                $row[$item]['class'] = $item;
+                $row[$item][$sub] = $list[$item]??0;
+            }
         }
-        return Grade::select($arr)->groupBy('class')->get()->toArray();
+
+
+        // dd($row);
+
+        
+        return $row;
     }
 
     public function headings(): array
